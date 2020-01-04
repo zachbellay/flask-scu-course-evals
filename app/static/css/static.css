@@ -1,0 +1,33 @@
+.bar{
+    width: 100%;
+    color: rgb(34, 34, 34);
+    height: 2px;
+    background-color: black;
+}
+
+h1, h5{
+    color: rgb(34, 34, 34);
+}
+
+.content {
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 1rem;
+    background: rgb(245, 245, 245, 0.8);
+    padding: 15px;
+    margin: 15px 0;
+    width: 100%;
+    position: relative;
+    width: 100%;
+}
+
+p{
+    font-size: medium;
+    display:inline-block;
+    width: 100%;
+    margin: 0 auto;
+    text-align: left;
+}
+
+blockquote{
+    font-size: small;
+}

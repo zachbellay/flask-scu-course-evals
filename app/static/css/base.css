@@ -1,0 +1,32 @@
+body {
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+html, body {margin: 0; height: 100%; overflow: hidden}
+
+
+center{
+    text-align: center;
+}
+
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #21252985;
+    color: white;
+    text-align: center;
+  }
+
+
+a{
+    font-size: medium;
+}
+
+.row{
+    margin-top: 3px !important;
+    margin-bottom: 3px !important;
+}

@@ -1,0 +1,33 @@
+{% extends "app_base.html" %}
+
+{% block head %}
+    {{ super() }}
+
+    <!-- Base Custom CSS for Background -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/course.css') }}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+    <div class="content">
+
+        <h1 class="center">{{ subject.upper() }} {{ subject_number }}</h1>
+        <h5 class="center">{{ class_name }}</h5>
+
+        <hr class="bar">
+        
+        <div class="stats">
+
+            <h5>Quality: {{'%0.2f'| format(overall_avg|float)}}</h5>
+            <h5>Difficulty: {{'%0.2f'| format(difficulty_avg|float)}}</h5>
+            <h5>Time Spent/Wk (hrs): {{'%0.1f'| format(avg_weekly_workload|float)}}</h5>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}  

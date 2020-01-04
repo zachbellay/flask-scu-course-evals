@@ -1,4 +1,7 @@
-from flask import Flask, redirect, request, url_for
+from flask import Flask, redirect, request, url_for, \
+render_template, jsonify, send_from_directory
+from flask_nav import Nav
+from flask_nav.elements import *
 from flask_login import (
     LoginManager,
     current_user,
@@ -7,30 +10,83 @@ from flask_login import (
     logout_user,
 )
 from oauthlib.oauth2 import WebApplicationClient
+from datetime import datetime
 import requests
 import json
+import os
+from distutils.util import strtobool
 
 from app import app
 from app import db
-from app.models import User
+from app import whitelist
+from app.models import User, Eval, ClassEval
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 client = WebApplicationClient(app.config['GOOGLE_CLIENT_ID'])
 
+# Initializing Navbar
+nav = Nav()
+
+# registers the "top" menubar
+topbar = Navbar('',
+    View('Home', 'index'),
+    View('Logout','logout')
+)
+
+nav.register_element('top', topbar)
+
+nav.init_app(app)
+
+@app.route('/haha')
+def haha():
+    raise Exception('500')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+@app.route('/course/<subject>/<subject_number>')
+@login_required
+def course(subject, subject_number):
+
+    subject=subject.upper()
+
+    class_eval = ClassEval.query.get((subject, subject_number))
+    
+    if class_eval is not None:
+        return render_template('course.html',
+            subject=subject,
+            subject_number=subject_number,
+            class_name=class_eval.class_name,
+            overall_avg=class_eval.overall_avg,
+            difficulty_avg=class_eval.difficulty_avg,
+            avg_weekly_workload=class_eval.avg_weekly_workload
+        )
+    else:
+        return redirect(url_for("index"))
+
+
+@app.route('/protected/<path:filename>')
+@login_required
+def protected(filename):
+    return send_from_directory(
+        os.path.join(app.root_path, 'protected'),
+        filename
+    )
+
 @app.route("/")
 def index():
     if current_user.is_authenticated:
-        return (
-            "<p>Hello, {}! You're logged in! Email: {}</p>"
-            "<div><p>Google Profile Picture:</p>"
-            '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.name, current_user.email
-            )
-        )
+        return render_template('index.html')
     else:
-        return '<a class="button" href="/login">Google Login</a>'
+        return render_template('login.html')
+        
 
 @app.route("/login")
 def login():
@@ -88,8 +144,14 @@ def callback():
     if userinfo_response.json().get("email_verified"):
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
-        picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
+        if('scu.edu' not in users_email.split('@') and 'alumni.scu.edu' not in users_email.split('@')):
+            return "User email not in scu.edu or alumni.scu.edu.", 400    
+
+        if(strtobool(app.config['WHITELIST_ENABLED'])):
+            if(users_email not in whitelist.whitelist):
+                return "User email not in whitelist, people e-mail zbellay@scu.edu to be added to the whitelist", 403
+
     else:
         return "User email not available or not verified by Google.", 400
 
@@ -104,10 +166,10 @@ def callback():
 
     # Begin user session by logging the user in
     login_user(user)
+    print(user)
 
     # Send user back to homepage
     return redirect(url_for("index"))
-
 
 def get_google_provider_cfg():
     return requests.get(app.config['GOOGLE_DISCOVERY_URL']).json()
@@ -115,6 +177,12 @@ def get_google_provider_cfg():
 @login_manager.user_loader
 def load_user(user_id):
   return User.query.get(user_id)
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
 
 @app.route("/logout")
 @login_required

@@ -1,5 +1,9 @@
 .env
-cert.pem
-key.pem
+prod-pems/
+dev-pems/
+course_evals.csv
 __pycache__/
 app.db
+.vscode/
+.DS_Store
+WHITELIST.txt
