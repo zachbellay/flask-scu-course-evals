@@ -22,8 +22,11 @@
         <div class="stats">
 
             <h5>Quality: {{'%0.2f'| format(overall_avg|float)}}</h5>
+            <p>Rated {{'%0.2f'| format(overall_avg_diff|float)}}% {{'higher' if overall_avg_diff_positive else 'lower'}} than the typical {{subject.upper()}} class.</small>
             <h5>Difficulty: {{'%0.2f'| format(difficulty_avg|float)}}</h5>
+            <p>Rated {{'%0.2f'| format(difficulty_avg_diff|float)}}% {{'harder' if difficulty_avg_diff_positive else 'easier'}} than the typical {{subject.upper()}} class.</small>
             <h5>Time Spent/Wk (hrs): {{'%0.1f'| format(avg_weekly_workload|float)}}</h5>
+            <p>{{'%0.2f'| format(avg_weekly_workload_diff|float)}}% {{'more' if avg_weekly_workload_diff_positive else 'less'}} time spent than the typical {{subject.upper()}} class.</small>
 
         </div>
     </div>

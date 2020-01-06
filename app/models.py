@@ -43,3 +43,19 @@ class ClassEval(db.Model):
   overall_avg=Column(FLOAT())
   difficulty_avg=Column(FLOAT())
   avg_weekly_workload=Column(FLOAT())
+
+class ProfessorEval(db.Model):
+  __tablename__ = "professor_evals"
+
+  instructor_name = Column(VARCHAR(), primary_key=True)
+  overall_avg=Column(FLOAT())
+  difficulty_avg=Column(FLOAT())
+  avg_weekly_workload=Column(FLOAT())
+
+class MajorEval(db.Model):
+  __tablename__ = "major_evals"
+
+  subject = Column(CHAR(4), primary_key=True)
+  overall_avg=Column(FLOAT())
+  difficulty_avg=Column(FLOAT())
+  avg_weekly_workload=Column(FLOAT())

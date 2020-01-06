@@ -18,7 +18,6 @@ class Config(object):
 class ProductionConfig(Config):   
     GOOGLE_CLIENT_ID = os.environ.get("PROD_GOOGLE_CLIENT_ID", None)
     GOOGLE_CLIENT_SECRET = os.environ.get("PROD_GOOGLE_CLIENT_SECRET", None)
-    pass
 
 class DevelopmentConfig(Config):
     GOOGLE_CLIENT_ID = os.environ.get("DEV_GOOGLE_CLIENT_ID", None)

@@ -4,6 +4,7 @@ from sqlalchemy.types import *
 import os
 import numpy as np
 
+from app.models import Eval, ClassEval, ProfessorEval, MajorEval
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -14,37 +15,6 @@ from sqlalchemy.types import *
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_CONFIG'])
 db = SQLAlchemy(app)
-
-class Eval(db.Model):
-  __tablename__ = "evals"
-
-  id = Column(INTEGER(), primary_key=True)
-  year = Column(INTEGER())
-  quarter = Column(CHAR(6))
-  course_id = Column(INTEGER())
-  instructor_name = Column(VARCHAR())
-  subject = Column(CHAR(4))
-  subject_number = Column(CHAR(5))
-  response_rate = Column(FLOAT())
-  num_enrolled = Column(INTEGER())
-  num_responses = Column(INTEGER())
-  class_name=Column(VARCHAR())
-  overall_avg=Column(FLOAT())
-  overall_std_dev=Column(FLOAT())
-  difficulty_avg=Column(FLOAT())
-  difficulty_med=Column(FLOAT())
-  difficulty_std_dev=Column(FLOAT())
-  avg_weekly_workload=Column(FLOAT())
-
-class ClassEval(db.Model):
-  __tablename__ = "class_evals"
-
-  subject = Column(CHAR(4), primary_key=True)
-  subject_number = Column(CHAR(5), primary_key=True)
-  class_name=Column(VARCHAR())
-  overall_avg=Column(FLOAT())
-  difficulty_avg=Column(FLOAT())
-  avg_weekly_workload=Column(FLOAT())
 
 def get_latest_name(evals, subject, subject_number):
     matches = []
@@ -129,13 +99,46 @@ def create_class_evals_table(evals):
     db.session.add(class_eval)
   db.session.commit()
 
+def create_professor_evals_table(evals):
+  professor_evals = pd.pivot_table(evals,
+                                  index=['instructor_name'],
+                                  aggfunc={'overall_avg' : np.mean,
+                                           'difficulty_avg' : np.mean,
+                                           'avg_weekly_workload' : np.mean                                  
+                                          }
+                                  )
+  for row in professor_evals.itertuples():
+    professor_eval = ProfessorEval(instructor_name=row.Index,
+                                   overall_avg=row.overall_avg,
+                                   difficulty_avg=row.difficulty_avg,
+                                   avg_weekly_workload=row.avg_weekly_workload)
+    db.session.add(professor_eval)
+  db.session.commit()
+
+def create_major_evals_table(evals):
+  major_evals = pd.pivot_table(evals,
+                               index=['subject'],
+                               aggfunc={'overall_avg' : np.mean,
+                                        'difficulty_avg' : np.mean,
+                                        'avg_weekly_workload' : np.mean                                  
+                                      }
+                              )
+  for row in major_evals.itertuples():
+    major_eval = MajorEval(subject=row.Index,
+                           overall_avg=row.overall_avg,
+                           difficulty_avg=row.difficulty_avg,
+                           avg_weekly_workload=row.avg_weekly_workload)
+    db.session.add(major_eval)
+  db.session.commit()
+
 def main():
   
   evals = pd.read_csv('course_evals.csv')
 
   evals_table_df = create_evals_table(evals)
   create_class_evals_table(evals_table_df)
-
+  create_professor_evals_table(evals_table_df)
+  create_major_evals_table(evals_table_df)
 
 if __name__ == '__main__':
   main()
