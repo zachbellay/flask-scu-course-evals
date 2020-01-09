@@ -31,3 +31,8 @@ input{
   overflow-y: auto;
   overflow-x:hidden;
 }
+
+::placeholder {
+  color: #555555;
+  opacity: 1; 
+}

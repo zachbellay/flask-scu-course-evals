@@ -3,6 +3,8 @@
 {% block head %}
     {{ super() }}
 
+    <script src="{{ url_for('static',filename='js/table_sorting.js') }}"></script>
+
     <!-- Base Custom CSS for Background -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/course.css') }}">
 {% endblock %}
@@ -25,12 +27,38 @@
             <p>Rated {{'%0.2f'| format(overall_avg_diff|float)}}% {{'higher' if overall_avg_diff_positive else 'lower'}} than the typical {{subject.upper()}} class.</small>
             <h5>Difficulty: {{'%0.2f'| format(difficulty_avg|float)}}</h5>
             <p>Rated {{'%0.2f'| format(difficulty_avg_diff|float)}}% {{'harder' if difficulty_avg_diff_positive else 'easier'}} than the typical {{subject.upper()}} class.</small>
-            <h5>Time Spent/Wk (hrs): {{'%0.1f'| format(avg_weekly_workload|float)}}</h5>
+            <h5>Time Spent Hrs/Wk: {{'%0.1f'| format(avg_weekly_workload|float)}}</h5>
             <p>{{'%0.2f'| format(avg_weekly_workload_diff|float)}}% {{'more' if avg_weekly_workload_diff_positive else 'less'}} time spent than the typical {{subject.upper()}} class.</small>
 
         </div>
-    </div>
 
+        <div class="course_professor_table">
+            <table id="myTable" class="tablesorter">
+                <thead>
+                  <tr>
+                    <th>Instructor</th>
+                    <th>Quality</th>
+                    <th>Difficulty</th>
+                    <th>Time Spent Hrs/Wk</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in course_professor_eval %}
+
+                    <tr>
+                      <td><a href="/professor/{{row.instructor_name}}">{{row.instructor_name}}</a></td>
+                      <td>{{'%0.2f'| format(row.overall_avg|float)}}</td>
+                      <td>{{'%0.2f'| format(row.difficulty_avg|float)}}</td>
+                      <td>{{'%0.1f'| format(row.avg_weekly_workload|float)}} hrs</td>
+                    </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+        </div>
+    </div>
 </div>
+
+<div style="height:50px; width:100%; clear:both;"></div>
 
 {% endblock %}  

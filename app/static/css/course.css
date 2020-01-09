@@ -27,3 +27,7 @@ h1, h5{
     margin: 0 auto;
     text-align: left;
 }
+
+.course_professor_table{
+    width: 100%;
+}

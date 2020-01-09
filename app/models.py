@@ -59,3 +59,16 @@ class MajorEval(db.Model):
   overall_avg=Column(FLOAT())
   difficulty_avg=Column(FLOAT())
   avg_weekly_workload=Column(FLOAT())
+
+# Has ratings specific to courses taught by a professor
+class CourseProfessorEval(db.Model):
+  __tablename__ = "course_professor_evals"
+
+  id = Column(INTEGER(), primary_key=True, autoincrement=True)
+  subject = Column(CHAR(4))
+  subject_number = Column(CHAR(5))
+  class_name=Column(VARCHAR())
+  instructor_name = Column(VARCHAR())
+  overall_avg=Column(FLOAT())
+  difficulty_avg=Column(FLOAT())
+  avg_weekly_workload=Column(FLOAT())

@@ -4,7 +4,7 @@ from sqlalchemy.types import *
 import os
 import numpy as np
 
-from app.models import Eval, ClassEval, ProfessorEval, MajorEval
+from app.models import Eval, ClassEval, ProfessorEval, MajorEval, CourseProfessorEval
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -131,6 +131,27 @@ def create_major_evals_table(evals):
     db.session.add(major_eval)
   db.session.commit()
 
+
+def create_course_professor_table(evals):
+  course_professor_evals = pd.pivot_table(evals,
+                                         index=['subject', 'subject_number', 'class_name', 'instructor_name'],
+                                         aggfunc={'overall_avg' : np.mean,
+                                                  'difficulty_avg' : np.mean,
+                                                  'avg_weekly_workload' : np.mean                                  
+                                                 }
+                                         )
+  for row in course_professor_evals.itertuples():
+    course_professor_eval = CourseProfessorEval(
+                            subject=row.Index[0],
+                            subject_number=row.Index[1],
+                            class_name=row.Index[2],
+                            instructor_name=row.Index[3],
+                            overall_avg=row.overall_avg,
+                            difficulty_avg=row.difficulty_avg,
+                            avg_weekly_workload=row.avg_weekly_workload)
+    db.session.add(course_professor_eval)
+  db.session.commit()                                      
+
 def main():
   
   evals = pd.read_csv('course_evals.csv')
@@ -139,6 +160,7 @@ def main():
   create_class_evals_table(evals_table_df)
   create_professor_evals_table(evals_table_df)
   create_major_evals_table(evals_table_df)
+  create_course_professor_table(evals)
 
 if __name__ == '__main__':
   main()

@@ -19,7 +19,7 @@ from distutils.util import strtobool
 from app import app
 from app import db
 from app import whitelist
-from app.models import User, Eval, ClassEval, ProfessorEval, MajorEval
+from app.models import User, Eval, ClassEval, ProfessorEval, MajorEval, CourseProfessorEval
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -56,13 +56,15 @@ def privacy():
 def professor(professor_name):
     
     professor_eval = ProfessorEval.query.get(professor_name)
+    course_professor_eval = CourseProfessorEval.query.filter(CourseProfessorEval.instructor_name == professor_name)
 
     if professor_eval is not None:
         return render_template('professor.html',
                                 professor_name=professor_name,
                                 overall_avg=professor_eval.overall_avg,
                                 difficulty_avg=professor_eval.difficulty_avg,
-                                avg_weekly_workload=professor_eval.avg_weekly_workload
+                                avg_weekly_workload=professor_eval.avg_weekly_workload,
+                                course_professor_eval=course_professor_eval
                               )
     else:
         return redirect(url_for("index"))
@@ -76,7 +78,8 @@ def course(subject, subject_number):
 
     major_eval = MajorEval.query.get(subject)
     class_eval = ClassEval.query.get((subject, subject_number))
-    
+    course_professor_eval = CourseProfessorEval.query.filter(CourseProfessorEval.subject == subject).filter(CourseProfessorEval.subject_number==subject_number).all()
+
     overall_avg_diff=((class_eval.overall_avg-major_eval.overall_avg)/major_eval.overall_avg)*100
     difficulty_avg_diff=((class_eval.difficulty_avg-major_eval.difficulty_avg)/major_eval.difficulty_avg)*100
     avg_weekly_workload_diff=((class_eval.avg_weekly_workload-major_eval.avg_weekly_workload)/major_eval.avg_weekly_workload)*100
@@ -103,7 +106,8 @@ def course(subject, subject_number):
             difficulty_avg_diff_positive=difficulty_avg_diff_positive,
             avg_weekly_workload=class_eval.avg_weekly_workload,
             avg_weekly_workload_diff=avg_weekly_workload_diff,
-            avg_weekly_workload_diff_positive=avg_weekly_workload_diff_positive
+            avg_weekly_workload_diff_positive=avg_weekly_workload_diff_positive,
+            course_professor_eval=course_professor_eval
         )
     else:
         return redirect(url_for("index"))
@@ -203,7 +207,7 @@ def callback():
 
     # Begin user session by logging the user in
     login_user(user)
-    print(user)
+    print(users_name, users_email)
 
     # Send user back to homepage
     return redirect(url_for("index"))
@@ -220,6 +224,11 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+
+@app.after_request
+def add_header(response):
+    response.cache_control.max_age = 300
+    return response
 
 @app.route("/logout")
 @login_required
