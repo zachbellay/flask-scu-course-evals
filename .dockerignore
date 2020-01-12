@@ -1,0 +1,31 @@
+# Python specific dockerignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+*.log
+.git
+Dockerfile
+.DS_Store
+.gitignore
+.dockerignore
+
+# Project specific dockerignore
+course_evals.csv
+README.md
+generate_search_json.py
+.vscode
+csv_to_sqlite.py
+app.db
+/db

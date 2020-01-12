@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: dc8b5b3456db
+Revision ID: 895e7ff977a1
 Revises: 
-Create Date: 2020-01-08 11:30:18.367905
+Create Date: 2020-01-10 12:36:27.503332
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dc8b5b3456db'
+revision = '895e7ff977a1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,9 @@ def upgrade():
     sa.Column('overall_avg', sa.FLOAT(), nullable=True),
     sa.Column('difficulty_avg', sa.FLOAT(), nullable=True),
     sa.Column('avg_weekly_workload', sa.FLOAT(), nullable=True),
+    sa.Column('overall_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('difficulty_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('avg_weekly_workload_percentile', sa.FLOAT(), nullable=True),
     sa.PrimaryKeyConstraint('subject', 'subject_number')
     )
     op.create_table('course_professor_evals',
@@ -36,6 +39,9 @@ def upgrade():
     sa.Column('overall_avg', sa.FLOAT(), nullable=True),
     sa.Column('difficulty_avg', sa.FLOAT(), nullable=True),
     sa.Column('avg_weekly_workload', sa.FLOAT(), nullable=True),
+    sa.Column('overall_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('difficulty_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('avg_weekly_workload_percentile', sa.FLOAT(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('evals',
@@ -63,14 +69,22 @@ def upgrade():
     sa.Column('overall_avg', sa.FLOAT(), nullable=True),
     sa.Column('difficulty_avg', sa.FLOAT(), nullable=True),
     sa.Column('avg_weekly_workload', sa.FLOAT(), nullable=True),
+    sa.Column('overall_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('difficulty_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('avg_weekly_workload_percentile', sa.FLOAT(), nullable=True),
     sa.PrimaryKeyConstraint('subject')
     )
     op.create_table('professor_evals',
-    sa.Column('instructor_name', sa.VARCHAR(), nullable=False),
+    sa.Column('id', sa.INTEGER(), nullable=False),
+    sa.Column('instructor_name', sa.VARCHAR(), nullable=True),
+    sa.Column('subject', sa.CHAR(length=4), nullable=True),
     sa.Column('overall_avg', sa.FLOAT(), nullable=True),
     sa.Column('difficulty_avg', sa.FLOAT(), nullable=True),
     sa.Column('avg_weekly_workload', sa.FLOAT(), nullable=True),
-    sa.PrimaryKeyConstraint('instructor_name')
+    sa.Column('overall_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('difficulty_avg_percentile', sa.FLOAT(), nullable=True),
+    sa.Column('avg_weekly_workload_percentile', sa.FLOAT(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
     sa.Column('id', sa.VARCHAR(), nullable=False),

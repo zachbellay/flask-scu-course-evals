@@ -43,14 +43,22 @@ class ClassEval(db.Model):
   overall_avg=Column(FLOAT())
   difficulty_avg=Column(FLOAT())
   avg_weekly_workload=Column(FLOAT())
+  overall_avg_percentile=Column(FLOAT())
+  difficulty_avg_percentile=Column(FLOAT())
+  avg_weekly_workload_percentile=Column(FLOAT())
 
 class ProfessorEval(db.Model):
   __tablename__ = "professor_evals"
 
-  instructor_name = Column(VARCHAR(), primary_key=True)
+  id = Column(INTEGER(), primary_key=True)
+  instructor_name = Column(VARCHAR())
+  subject = Column(CHAR(4))
   overall_avg=Column(FLOAT())
   difficulty_avg=Column(FLOAT())
   avg_weekly_workload=Column(FLOAT())
+  overall_avg_percentile=Column(FLOAT())
+  difficulty_avg_percentile=Column(FLOAT())
+  avg_weekly_workload_percentile=Column(FLOAT())
 
 class MajorEval(db.Model):
   __tablename__ = "major_evals"
@@ -59,6 +67,9 @@ class MajorEval(db.Model):
   overall_avg=Column(FLOAT())
   difficulty_avg=Column(FLOAT())
   avg_weekly_workload=Column(FLOAT())
+  overall_avg_percentile=Column(FLOAT())
+  difficulty_avg_percentile=Column(FLOAT())
+  avg_weekly_workload_percentile=Column(FLOAT())
 
 # Has ratings specific to courses taught by a professor
 class CourseProfessorEval(db.Model):
@@ -72,3 +83,6 @@ class CourseProfessorEval(db.Model):
   overall_avg=Column(FLOAT())
   difficulty_avg=Column(FLOAT())
   avg_weekly_workload=Column(FLOAT())
+  overall_avg_percentile=Column(FLOAT())
+  difficulty_avg_percentile=Column(FLOAT())
+  avg_weekly_workload_percentile=Column(FLOAT())

@@ -1,21 +1,5 @@
 $( document ).ready(function() {
 
-    // var options = {
-        
-    //     url: "protected/courses_with_names.json",
-
-    //     getValue: "class",
-
-    //     list: {
-    //         maxNumberOfElements: 100,
-    //         match: {
-    //             enabled: true
-    //         }
-    //     },
-
-    //     theme: "square"
-    // };
-
     var options = {
 
         url: "protected/courses_with_names.json",

@@ -3,8 +3,10 @@ FROM python:3.7.6-slim-buster
 COPY . /src
 WORKDIR /src
 
+VOLUME /src/db
+
 ENV APP_CONFIG=config.ProductionConfig
-ENV WHITELIST_ENABLED=True
+ENV WHITELIST_ENABLED=False
 
 RUN python3 -m pip install -r requirements.txt
 

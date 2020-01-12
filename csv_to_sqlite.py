@@ -12,18 +12,19 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Column
 from sqlalchemy.types import * 
 
+import scipy.stats
+
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_CONFIG'])
 db = SQLAlchemy(app)
 
 def get_latest_name(evals, subject, subject_number):
-    matches = []
-    for eval_ in evals.itertuples():
-        if(eval_.subject == subject and eval_.subject_number == subject_number):
-            matches.append(eval_)
+    # matches = []
+    # for eval_ in evals.itertuples():
+    #     if(eval_.subject == subject and eval_.subject_number == subject_number):
+    #         matches.append(eval_)
+    matches = evals.query(f"subject=='{subject}' and subject_number=='{subject_number}'")
     
-    matches = pd.DataFrame(matches)
-
     quarters = { 'Winter' : 0, 'Spring' : 1, 'Summer' : 2, 'Fall' : 3 }
 
     matches['quarter_sort'] = matches['quarter'].replace(quarters)
@@ -89,29 +90,73 @@ def create_class_evals_table(evals):
       class_name = get_latest_name(evals, subject, subject_number)
       class_evals['class_name'].loc[subject, subject_number] = class_name
   
+  majors = set(evals['subject'])
+
+  class_evals['overall_avg_percentile']=''
+  class_evals['difficulty_avg_percentile']=''
+  class_evals['avg_weekly_workload_percentile']=''
+
+  for major in sorted(majors):
+      major_list = class_evals.query(f"subject=='{major}'")
+      for row in major_list.itertuples():
+          overall_avg_percentile=scipy.stats.percentileofscore(a=major_list.overall_avg, score=row.overall_avg)
+          difficulty_avg_percentile=scipy.stats.percentileofscore(a=major_list.difficulty_avg, score=row.difficulty_avg)
+          avg_weekly_workload_percentile=scipy.stats.percentileofscore(a=major_list.avg_weekly_workload, score=row.avg_weekly_workload)
+
+          class_evals['overall_avg_percentile'].loc[row.Index]=overall_avg_percentile
+          class_evals['difficulty_avg_percentile'].loc[row.Index]=difficulty_avg_percentile
+          class_evals['avg_weekly_workload_percentile'].loc[row.Index]=avg_weekly_workload_percentile
+
   for row in class_evals.itertuples():
     class_eval = ClassEval(subject=row.Index[0],
                            subject_number=row.Index[1],
                            class_name=row.class_name,
                            overall_avg=row.overall_avg,
                            difficulty_avg=row.difficulty_avg,
-                           avg_weekly_workload=row.avg_weekly_workload)
+                           avg_weekly_workload=row.avg_weekly_workload,
+                           overall_avg_percentile=row.overall_avg_percentile,
+                           difficulty_avg_percentile=row.difficulty_avg_percentile,
+                           avg_weekly_workload_percentile=row.avg_weekly_workload_percentile)
     db.session.add(class_eval)
   db.session.commit()
 
 def create_professor_evals_table(evals):
   professor_evals = pd.pivot_table(evals,
-                                  index=['instructor_name'],
+                                  index=['instructor_name', 'subject'],
                                   aggfunc={'overall_avg' : np.mean,
                                            'difficulty_avg' : np.mean,
                                            'avg_weekly_workload' : np.mean                                  
                                           }
                                   )
-  for row in professor_evals.itertuples():
-    professor_eval = ProfessorEval(instructor_name=row.Index,
+  majors = set(evals['subject'])
+
+  professor_evals['overall_avg_percentile']=''
+  professor_evals['difficulty_avg_percentile']=''
+  professor_evals['avg_weekly_workload_percentile']=''
+
+  for major in sorted(majors):
+      major_list = professor_evals.query(f"subject=='{major}'")
+
+      for row in major_list.itertuples():
+
+          overall_avg_percentile=scipy.stats.percentileofscore(a=major_list.overall_avg, score=row.overall_avg)
+          difficulty_avg_percentile=scipy.stats.percentileofscore(a=major_list.difficulty_avg, score=row.difficulty_avg)
+          avg_weekly_workload_percentile=scipy.stats.percentileofscore(a=major_list.avg_weekly_workload, score=row.avg_weekly_workload)
+
+          professor_evals['overall_avg_percentile'].loc[row.Index]=overall_avg_percentile
+          professor_evals['difficulty_avg_percentile'].loc[row.Index]=difficulty_avg_percentile
+          professor_evals['avg_weekly_workload_percentile'].loc[row.Index]=avg_weekly_workload_percentile
+
+  for id, row in enumerate(professor_evals.itertuples()):
+    professor_eval = ProfessorEval(id=id,
+                                   instructor_name=row.Index[0],
+                                   subject=row.Index[1],
                                    overall_avg=row.overall_avg,
                                    difficulty_avg=row.difficulty_avg,
-                                   avg_weekly_workload=row.avg_weekly_workload)
+                                   avg_weekly_workload=row.avg_weekly_workload,
+                                   overall_avg_percentile=row.overall_avg_percentile,
+                                   difficulty_avg_percentile=row.difficulty_avg_percentile,
+                                   avg_weekly_workload_percentile=row.avg_weekly_workload_percentile)
     db.session.add(professor_eval)
   db.session.commit()
 
@@ -133,24 +178,45 @@ def create_major_evals_table(evals):
 
 
 def create_course_professor_table(evals):
-  course_professor_evals = pd.pivot_table(evals,
-                                         index=['subject', 'subject_number', 'class_name', 'instructor_name'],
-                                         aggfunc={'overall_avg' : np.mean,
-                                                  'difficulty_avg' : np.mean,
-                                                  'avg_weekly_workload' : np.mean                                  
-                                                 }
-                                         )
-  for row in course_professor_evals.itertuples():
-    course_professor_eval = CourseProfessorEval(
-                            subject=row.Index[0],
-                            subject_number=row.Index[1],
-                            class_name=row.Index[2],
-                            instructor_name=row.Index[3],
-                            overall_avg=row.overall_avg,
-                            difficulty_avg=row.difficulty_avg,
-                            avg_weekly_workload=row.avg_weekly_workload)
-    db.session.add(course_professor_eval)
-  db.session.commit()                                      
+    course_professor_evals = pd.pivot_table(evals,
+                                          index=['subject', 'subject_number', 'class_name', 'instructor_name'],
+                                          aggfunc={'overall_avg' : np.mean,
+                                                    'difficulty_avg' : np.mean,
+                                                    'avg_weekly_workload' : np.mean                                  
+                                                  }
+                                          )
+
+    course_professor_evals['overall_avg_percentile']=''
+    course_professor_evals['difficulty_avg_percentile']=''
+    course_professor_evals['avg_weekly_workload_percentile']=''
+
+    majors = set(evals['subject'])
+
+    for major in sorted(majors):    
+        major_list = course_professor_evals.query(f"subject=='{major}'")
+        for row in major_list.itertuples():     
+            overall_avg_percentile=scipy.stats.percentileofscore(a=major_list.overall_avg, score=row.overall_avg)
+            difficulty_avg_percentile=scipy.stats.percentileofscore(a=major_list.difficulty_avg, score=row.difficulty_avg)
+            avg_weekly_workload_percentile=scipy.stats.percentileofscore(a=major_list.avg_weekly_workload, score=row.avg_weekly_workload)
+
+            course_professor_evals['overall_avg_percentile'].loc[row.Index]=overall_avg_percentile
+            course_professor_evals['difficulty_avg_percentile'].loc[row.Index]=difficulty_avg_percentile
+            course_professor_evals['avg_weekly_workload_percentile'].loc[row.Index]=avg_weekly_workload_percentile
+
+    for row in course_professor_evals.itertuples():
+      course_professor_eval = CourseProfessorEval(
+                              subject=row.Index[0],
+                              subject_number=row.Index[1],
+                              class_name=row.Index[2],
+                              instructor_name=row.Index[3],
+                              overall_avg=row.overall_avg,
+                              difficulty_avg=row.difficulty_avg,
+                              avg_weekly_workload=row.avg_weekly_workload,
+                              overall_avg_percentile=row.overall_avg_percentile,
+                              difficulty_avg_percentile=row.difficulty_avg_percentile,
+                              avg_weekly_workload_percentile=row.avg_weekly_workload_percentile)
+      db.session.add(course_professor_eval)
+    db.session.commit()                                      
 
 def main():
   

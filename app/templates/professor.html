@@ -12,49 +12,123 @@
 
 {% block content %}
 
-<div class="container">
 
-    <div class="content">
 
-        <h1 class="center">{{ professor_name }}</h1>
+<div class="content">
 
+    <h1 class="center">{{ professor_name }}</h1>
+
+    <hr class="bar">
+    
+    <div class="stats">
+
+      {% for row in professor_eval %}
+
+        <div class="text-center">
+          <div class="row">
+            <div class="col-sm">
+              <h5>Overall Rating for {{row.subject}}:</h5>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+                 
+          <div class="col-sm">
+            <h5>
+              Quality: 
+            </h5>
+            <span style="font-size: 2em;">
+              {{'%0.2f'| format(row.overall_avg|float)}}
+            </span>
+            <span style="font-size: 1.25em;">
+              / 5
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1.25em;">
+              |
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1.25em; font-style: italic;">
+              {{row.overall_avg_percentile|round|int}}<sup>{{row.overall_avg_percentile|round|int|add_number_suffix}}</sup> 
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1em; font-style: italic;">
+              percentile
+            </span>
+          </div>
+
+          <div class="col-sm">
+            <h5>
+              Difficulty: 
+            </h5>
+            <span style="font-size: 2em;">
+              {{'%0.2f'| format(row.difficulty_avg|float)}}
+            </span>
+            <span style="font-size: 1.25em;">
+              / 5
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1.25em;">
+              |
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1.25em; font-style: italic;">
+              {{row.difficulty_avg_percentile|round|int}}<sup>{{row.difficulty_avg_percentile|round|int|add_number_suffix}}</sup> 
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1em; font-style: italic;">
+              percentile
+            </span>
+          </div>
+
+          <div class="col-sm">
+            <h5 style="margin-bottom: 0;">
+              Time Spent:
+            </h5>
+            <div style="color: rgb(88, 88, 88); font-size: 0.75em;">
+              (Hrs/Wk)
+            </div>
+            <span style="font-size: 2em;">
+              {{'%0.2f'| format(row.avg_weekly_workload|float)}}
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1.25em;">
+              |
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1.25em; font-style: italic;">
+              {{row.avg_weekly_workload_percentile|round|int}}<sup>{{row.avg_weekly_workload_percentile|round|int|add_number_suffix}}</sup> 
+            </span>
+            <span style="color: rgb(88, 88, 88); font-size: 1em; font-style: italic;">
+              percentile
+            </span>
+          </div>
+        </div>
         <hr class="bar">
-        
-        <div class="stats">
+      {% endfor %}
 
-            <h5>Quality: {{'%0.2f'| format(overall_avg|float)}}</h5>
-            <h5>Difficulty: {{'%0.2f'| format(difficulty_avg|float)}}</h5>
-            <h5>Time Spent/Wk (hrs): {{'%0.1f'| format(avg_weekly_workload|float)}}</h5>
+    </div>
 
-        </div>
+    <div style="height:20px; width:100%; clear:both;"></div>
 
-        <div class="course_professor_table">
-            <table id="myTable" class="tablesorter">
-                <thead>
-                  <tr>
-                    <th>Class</th>
-                    <th>Class Name</th>
-                    <th>Quality</th>
-                    <th>Difficulty</th>
-                    <th>Time Spent Hrs/Wk</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for row in course_professor_eval %}
-                    <tr>
-                      <td><a href="/course/{{row.subject}}/{{row.subject_number}}">{{row.subject}} {{row.subject_number}}</a></td>
-                      <td>{{row.class_name}}</td>
-                      <td>{{'%0.2f'| format(row.overall_avg|float)}}</td>
-                      <td>{{'%0.2f'| format(row.difficulty_avg|float)}}</td>
-                      <td>{{'%0.1f'| format(row.avg_weekly_workload|float)}} hrs</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-        </div>
+    <div class="course_professor_table" style="overflow-x:auto;">
+        <table id="myTable" class="tablesorter">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Class Name</th>
+                <th>Quality</th>
+                <th>Difficulty</th>
+                <th>Time Spent Hrs/Wk</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in course_professor_eval %}
+                <tr>
+                  <td><a href="/course/{{row.subject}}/{{row.subject_number}}">{{row.subject}} {{row.subject_number}}</a></td>
+                  <td>{{row.class_name}}</td>
+                  <td>{{'%0.2f'| format(row.overall_avg|float)}}</td>
+                  <td>{{'%0.2f'| format(row.difficulty_avg|float)}}</td>
+                  <td>{{'%0.1f'| format(row.avg_weekly_workload|float)}} hrs</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
     </div>
 </div>
 
-<div style="height:50px; width:100%; clear:both;"></div>
 
 {% endblock %}

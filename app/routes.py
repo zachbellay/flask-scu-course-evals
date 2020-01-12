@@ -16,6 +16,7 @@ import json
 import os
 from distutils.util import strtobool
 
+from . import filters
 from app import app
 from app import db
 from app import whitelist
@@ -55,15 +56,13 @@ def privacy():
 @login_required
 def professor(professor_name):
     
-    professor_eval = ProfessorEval.query.get(professor_name)
-    course_professor_eval = CourseProfessorEval.query.filter(CourseProfessorEval.instructor_name == professor_name)
+    professor_eval = ProfessorEval.query.filter(ProfessorEval.instructor_name == professor_name).all()
+    course_professor_eval = CourseProfessorEval.query.filter(CourseProfessorEval.instructor_name == professor_name).all()
 
     if professor_eval is not None:
         return render_template('professor.html',
                                 professor_name=professor_name,
-                                overall_avg=professor_eval.overall_avg,
-                                difficulty_avg=professor_eval.difficulty_avg,
-                                avg_weekly_workload=professor_eval.avg_weekly_workload,
+                                professor_eval=professor_eval,
                                 course_professor_eval=course_professor_eval
                               )
     else:
@@ -74,39 +73,14 @@ def professor(professor_name):
 @login_required
 def course(subject, subject_number):
 
-    subject=subject.upper()
+    subject = subject.upper()
 
-    major_eval = MajorEval.query.get(subject)
     class_eval = ClassEval.query.get((subject, subject_number))
     course_professor_eval = CourseProfessorEval.query.filter(CourseProfessorEval.subject == subject).filter(CourseProfessorEval.subject_number==subject_number).all()
-
-    overall_avg_diff=((class_eval.overall_avg-major_eval.overall_avg)/major_eval.overall_avg)*100
-    difficulty_avg_diff=((class_eval.difficulty_avg-major_eval.difficulty_avg)/major_eval.difficulty_avg)*100
-    avg_weekly_workload_diff=((class_eval.avg_weekly_workload-major_eval.avg_weekly_workload)/major_eval.avg_weekly_workload)*100
-
-    overall_avg_diff_positive = 1 if overall_avg_diff > 0 else 0
-    difficulty_avg_diff_positive = 1 if difficulty_avg_diff > 0 else 0
-    avg_weekly_workload_diff_positive = 1 if avg_weekly_workload_diff > 0 else 0
-
-    overall_avg_diff=abs(overall_avg_diff)
-    difficulty_avg_diff=abs(difficulty_avg_diff)
-    avg_weekly_workload_diff=abs(avg_weekly_workload_diff)
-
-
+    
     if class_eval is not None:
         return render_template('course.html',
-            subject=subject,
-            subject_number=subject_number,
-            class_name=class_eval.class_name,
-            overall_avg=class_eval.overall_avg,
-            overall_avg_diff=overall_avg_diff,
-            overall_avg_diff_positive=overall_avg_diff_positive,
-            difficulty_avg=class_eval.difficulty_avg,
-            difficulty_avg_diff=difficulty_avg_diff,
-            difficulty_avg_diff_positive=difficulty_avg_diff_positive,
-            avg_weekly_workload=class_eval.avg_weekly_workload,
-            avg_weekly_workload_diff=avg_weekly_workload_diff,
-            avg_weekly_workload_diff_positive=avg_weekly_workload_diff_positive,
+            class_eval=class_eval,
             course_professor_eval=course_professor_eval
         )
     else:
@@ -224,11 +198,6 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
-
-@app.after_request
-def add_header(response):
-    response.cache_control.max_age = 300
-    return response
 
 @app.route("/logout")
 @login_required

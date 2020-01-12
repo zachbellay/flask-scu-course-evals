@@ -7,7 +7,7 @@ class Config(object):
     TESTING = False
     WHITELIST_ENABLED = os.environ.get("WHITELIST_ENABLED", False)
     SECRET_KEY = os.urandom(16)
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db', 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Google Login Information

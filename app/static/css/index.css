@@ -36,3 +36,7 @@ input{
   color: #555555;
   opacity: 1; 
 }
+
+.easy-autocomplete{
+  width: 100% !important;
+}
