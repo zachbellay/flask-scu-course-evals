@@ -26,11 +26,15 @@ def get_course_with_names():
 def get_professors():
     professors = []
 
+    professor_set = set()
+
     # Get all professor names
     professor_evals = ProfessorEval.query.all()
 
     for row in professor_evals:
-        professors.append({'name' : row.instructor_name})
+        if(row.instructor_name not in professor_set):
+            professors.append({'name' : row.instructor_name})
+            professor_set.add(row.instructor_name)
 
     return professors
 
