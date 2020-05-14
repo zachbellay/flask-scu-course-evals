@@ -14,6 +14,8 @@ from sqlalchemy.types import *
 
 import scipy.stats
 
+import difflib
+
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_CONFIG'])
 db = SQLAlchemy(app)
@@ -219,9 +221,15 @@ def create_course_professor_table(evals):
     db.session.commit()                                      
 
 def main():
-  
+   
   evals = pd.read_csv('course_evals.csv')
 
+  # Replaces class name with latest version of class name
+  for index, row in evals.iterrows():
+    subject, subject_number = row['subject'], row['subject_number']
+    class_name = get_latest_name(evals, subject, subject_number)
+    evals['class_name'].iloc[index] = class_name
+      
   evals_table_df = create_evals_table(evals)
   create_class_evals_table(evals_table_df)
   create_professor_evals_table(evals_table_df)
