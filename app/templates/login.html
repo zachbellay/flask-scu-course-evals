@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
 {% block content %}
 
 
@@ -10,13 +15,14 @@
 
         <div class="col-md">
 
-
             <div class="panel">
-
                 <h1 class="center" style="color: whitesmoke; text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;">
                     SCU Course Evals
-                </h1>            
-
+                </h1>         
+                
+                <a href='/about'>
+                    <div class="minecraft">Newly updated!</div>
+                </a>
             </div>
         
             <div class="panel">
