@@ -3,6 +3,10 @@
 {% block head %}
     {{ super() }}
 
+    {% block title %}
+    <title>SCU Course Evals | {{ professor_name }}</title>
+    {% endblock %}
+
     <script src="{{ url_for('static',filename='js/table_sorting.js') }}"></script>
 
     <!-- Base Custom CSS for Background -->

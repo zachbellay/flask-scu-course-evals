@@ -1,14 +1,18 @@
+import json
+import os
+from datetime import datetime
+from distutils.util import strtobool
+
+import requests
 from flask import (
     Flask,
-    redirect,
-    request,
-    url_for,
-    render_template,
     jsonify,
+    redirect,
+    render_template,
+    request,
     send_from_directory,
+    url_for,
 )
-from flask_nav import Nav
-from flask_nav.elements import *
 from flask_login import (
     LoginManager,
     current_user,
@@ -16,40 +20,25 @@ from flask_login import (
     login_user,
     logout_user,
 )
+from flask_nav.elements import *
 from oauthlib.oauth2 import WebApplicationClient
-from datetime import datetime
-import requests
-import json
-import os
-from distutils.util import strtobool
+
+from app import app, db, whitelist
+from app.models import (
+    ClassEval,
+    CourseProfessorEval,
+    Eval,
+    MajorEval,
+    ProfessorEval,
+    User,
+)
 
 from . import filters
-from app import app
-from app import db
-from app import whitelist
-from app.models import (
-    User,
-    Eval,
-    ClassEval,
-    ProfessorEval,
-    MajorEval,
-    CourseProfessorEval,
-)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 client = WebApplicationClient(app.config["GOOGLE_CLIENT_ID"])
-
-# Initializing Navbar
-nav = Nav()
-
-# registers the "top" menubar
-topbar = Navbar("", View("Home", "index"), View("Logout", "logout"))
-
-nav.register_element("top", topbar)
-
-nav.init_app(app)
 
 
 @app.route("/haha")

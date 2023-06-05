@@ -1,17 +1,18 @@
 @media screen and (min-width: 728px) {
     .minecraft {
-        left: 85% !important;;
+        left: 80% !important;
+        ;
     }
 }
 
 @media screen and (max-width: 727px) {
-    .minecraft{
+    .minecraft {
         left: 80% !important;
     }
 }
 
 @media screen and (max-width: 420px) {
-    .minecraft{
+    .minecraft {
         left: 60% !important;
     }
 }
@@ -20,20 +21,21 @@
 .minecraft {
     position: absolute;
     color: yellow;
-    
-    top: -2%;
+
+    top: 5%;
     font-size: 150%;
     transform: rotate(-20deg);
-    /* width: 100%; */
+    width: 40%;
     animation: minecraft .25s;
-        animation-direction: alternate;
-        animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
 }
-  
+
 @keyframes minecraft {
     0% {
         transform: scale(0.875) rotate(20deg);
     }
+
     100% {
         transform: scale(1) rotate(20deg);
     }
