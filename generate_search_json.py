@@ -1,11 +1,11 @@
-import os
-import numpy as np
 import json
+import os
 
-from app.models import Eval, ClassEval, ProfessorEval
-
+import numpy as np
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+
+from app.models import ClassEval, Eval, ProfessorEval
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_CONFIG'])
@@ -18,8 +18,13 @@ def get_course_with_names():
     class_evals = ClassEval.query.all()
 
     for row in class_evals:
-        course_with_name = row.subject + ' ' + row.subject_number + ' ' + row.class_name
-        courses_with_names.append({'name' : course_with_name})
+        try:
+            course_with_name = row.subject + ' ' + row.subject_number + ' ' + row.class_name
+            courses_with_names.append({'name' : course_with_name})
+        except:
+            print('Subject: ' + row.subject if row.subject else 'None')
+            print('Subject Number: ' + row.subject_number if row.subject_number else 'None')
+            print('Class Name: ' + row.class_name if row.class_name else 'None')
     
     return courses_with_names
 

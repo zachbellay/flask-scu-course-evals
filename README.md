@@ -10,8 +10,14 @@
 - Transfer `app.db` file to server under `~/db`
 - To get image: 
     - `docker pull registry.gitlab.com/zachbellay/flask-scu-course-evals:latest`
+- To build image:
+    `docker buildx build --platform linux/amd64 --push -t registry.gitlab.com/zachbellay/flask-scu-course-evals:july-2023-update .`
 - To run image: 
     - `docker run -p 443:5000 -p 80:5000 -v /home/zbellay/db:/src/db registry.gitlab.com/zachbellay/flask-scu-course-evals:latest`
+
+### To Update Database 
+1. If you cleared db/app.db, then be sure to run `flask db migrate && flask db upgrade`. Then run `sqlite3 db/app.db` and run the `.tables` command and ensure it returns names of the table.
+2. Then run `csv_to_sqlite.py`.
 
 
 #### TODO
