@@ -2,19 +2,17 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.types import * 
 import os
+
 import numpy as np
-
-from app.models import Eval, ClassEval, ProfessorEval, MajorEval, CourseProfessorEval
-
+import pandas as pd
+import scipy.stats
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy import create_engine, Column
 from sqlalchemy.types import * 
 
-import scipy.stats
-
-import difflib
+from app.models import ClassEval, CourseProfessorEval, Eval, MajorEval, ProfessorEval
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_CONFIG'])

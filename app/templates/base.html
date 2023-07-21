@@ -3,6 +3,12 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {% block title %}
+        <title>SCU Course Evals</title>
+    {% endblock %}
+
+    <meta name="description" content="Santa Clara University course evaluations made easy to search by class and professor. Updated through Winter 2023." />
    
     <!-- Base Custom CSS for Background -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
