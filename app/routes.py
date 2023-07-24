@@ -1,7 +1,18 @@
-from flask import Flask, redirect, request, url_for, \
-render_template, jsonify, send_from_directory
-from flask_nav import Nav
-from flask_nav.elements import *
+import json
+import os
+from datetime import datetime
+from distutils.util import strtobool
+
+import requests
+from flask import (
+    Flask,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    url_for,
+)
 from flask_login import (
     LoginManager,
     current_user,
@@ -9,99 +20,100 @@ from flask_login import (
     login_user,
     logout_user,
 )
+from flask_nav.elements import *
 from oauthlib.oauth2 import WebApplicationClient
-from datetime import datetime
-import requests
-import json
-import os
-from distutils.util import strtobool
+
+from app import app, db, whitelist
+from app.models import (
+    ClassEval,
+    CourseProfessorEval,
+    Eval,
+    MajorEval,
+    ProfessorEval,
+    User,
+)
 
 from . import filters
-from app import app
-from app import db
-from app import whitelist
-from app.models import User, Eval, ClassEval, ProfessorEval, MajorEval, CourseProfessorEval
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-client = WebApplicationClient(app.config['GOOGLE_CLIENT_ID'])
+client = WebApplicationClient(app.config["GOOGLE_CLIENT_ID"])
 
-# Initializing Navbar
-nav = Nav()
 
-# registers the "top" menubar
-topbar = Navbar('',
-    View('Home', 'index'),
-    View('Logout','logout')
-)
-
-nav.register_element('top', topbar)
-
-nav.init_app(app)
-
-@app.route('/haha')
+@app.route("/haha")
 def haha():
-    raise Exception('500')
+    raise Exception("500")
 
-@app.route('/about')
+
+@app.route("/about")
 def about():
-    return render_template('about.html')
+    return render_template("about.html")
 
-@app.route('/privacy')
+
+@app.route("/privacy")
 def privacy():
-    return render_template('privacy.html')
+    return render_template("privacy.html")
 
-@app.route('/professor/<professor_name>')
+
+@app.route("/professor/<professor_name>")
 @login_required
 def professor(professor_name):
-    
-    professor_eval = ProfessorEval.query.filter(ProfessorEval.instructor_name == professor_name).all()
-    course_professor_eval = CourseProfessorEval.query.filter(CourseProfessorEval.instructor_name == professor_name).all()
+
+    professor_eval = ProfessorEval.query.filter(
+        ProfessorEval.instructor_name == professor_name
+    ).all()
+    course_professor_eval = CourseProfessorEval.query.filter(
+        CourseProfessorEval.instructor_name == professor_name
+    ).all()
 
     if professor_eval is not None:
-        return render_template('professor.html',
-                                professor_name=professor_name,
-                                professor_eval=professor_eval,
-                                course_professor_eval=course_professor_eval
-                              )
+        return render_template(
+            "professor.html",
+            professor_name=professor_name,
+            professor_eval=professor_eval,
+            course_professor_eval=course_professor_eval,
+        )
     else:
         return redirect(url_for("index"))
 
 
-@app.route('/course/<subject>/<subject_number>')
+@app.route("/course/<subject>/<subject_number>")
 @login_required
 def course(subject, subject_number):
 
     subject = subject.upper()
 
     class_eval = ClassEval.query.get((subject, subject_number))
-    course_professor_eval = CourseProfessorEval.query.filter(CourseProfessorEval.subject == subject).filter(CourseProfessorEval.subject_number==subject_number).all()
-    
+    course_professor_eval = (
+        CourseProfessorEval.query.filter(CourseProfessorEval.subject == subject)
+        .filter(CourseProfessorEval.subject_number == subject_number)
+        .all()
+    )
+
     if class_eval is not None:
-        return render_template('course.html',
+        return render_template(
+            "course.html",
             class_eval=class_eval,
-            course_professor_eval=course_professor_eval
+            course_professor_eval=course_professor_eval,
         )
     else:
         return redirect(url_for("index"))
 
 
-@app.route('/protected/<path:filename>')
+@app.route("/protected/<path:filename>")
 @login_required
 def protected(filename):
-    return send_from_directory(
-        os.path.join(app.root_path, 'protected'),
-        filename
-    )
+    return send_from_directory(os.path.join(app.root_path, "protected"), filename)
+
 
 @app.route("/")
 def index():
     if current_user.is_authenticated:
-        return render_template('index.html')
+        return render_template("index.html")
     else:
-        return render_template('login.html')
-        
+        return render_template("login.html")
+
 
 @app.route("/login")
 def login():
@@ -117,6 +129,7 @@ def login():
         scope=["openid", "email", "profile"],
     )
     return redirect(request_uri)
+
 
 @app.route("/login/callback")
 def callback():
@@ -139,8 +152,7 @@ def callback():
         token_url,
         headers=headers,
         data=body,
-        auth=(app.config['GOOGLE_CLIENT_ID'], 
-              app.config['GOOGLE_CLIENT_SECRET']),
+        auth=(app.config["GOOGLE_CLIENT_ID"], app.config["GOOGLE_CLIENT_SECRET"]),
     )
 
     # Parse the tokens!
@@ -160,12 +172,17 @@ def callback():
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         users_name = userinfo_response.json()["given_name"]
-        if('scu.edu' not in users_email.split('@') and 'alumni.scu.edu' not in users_email.split('@')):
-            return "User email not in scu.edu or alumni.scu.edu.", 400    
+        if "scu.edu" not in users_email.split(
+            "@"
+        ) and "alumni.scu.edu" not in users_email.split("@"):
+            return "User email not in scu.edu or alumni.scu.edu.", 400
 
-        if(strtobool(app.config['WHITELIST_ENABLED'])):
-            if(users_email not in whitelist.whitelist):
-                return "User email not in whitelist, people e-mail zbellay@scu.edu to be added to the whitelist", 403
+        if strtobool(app.config["WHITELIST_ENABLED"]):
+            if users_email not in whitelist.whitelist:
+                return (
+                    "User email not in whitelist, people e-mail zbellay@scu.edu to be added to the whitelist",
+                    403,
+                )
 
     else:
         return "User email not available or not verified by Google.", 400
@@ -173,11 +190,11 @@ def callback():
     user = User(id=unique_id, name=users_name, email=users_email, active=True)
 
     # Doesn't exist? Add it to the database.
-    if not User.query.filter(User.email==users_email).all():        
+    if not User.query.filter(User.email == users_email).all():
         db.session.add(user)
         db.session.commit()
     else:
-        user = User.query.filter(User.email==users_email).first()
+        user = User.query.filter(User.email == users_email).first()
 
     # Begin user session by logging the user in
     login_user(user)
@@ -186,12 +203,15 @@ def callback():
     # Send user back to homepage
     return redirect(url_for("index"))
 
+
 def get_google_provider_cfg():
-    return requests.get(app.config['GOOGLE_DISCOVERY_URL']).json()
+    return requests.get(app.config["GOOGLE_DISCOVERY_URL"]).json()
+
 
 @login_manager.user_loader
 def load_user(user_id):
-  return User.query.get(user_id)
+    return User.query.get(user_id)
+
 
 @app.before_request
 def before_request():
@@ -199,10 +219,9 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
+
 @app.route("/logout")
 @login_required
 def logout():
-  logout_user()
-  return redirect(url_for("index"))
-
-
+    logout_user()
+    return redirect(url_for("index"))

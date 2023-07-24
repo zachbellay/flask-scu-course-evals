@@ -1,69 +1,68 @@
 {% block head %}
 
-    <meta charset="utf-8" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    {% block title %}
-        <title>SCU Course Evals</title>
-    {% endblock %}
+{% block title %}
+<title>SCU Course Evals</title>
+{% endblock %}
 
-    <meta name="description" content="Santa Clara University course evaluations made easy to search by class and professor. Updated through Winter 2023." />
-   
-    <!-- Base Custom CSS for Background -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<meta name="description"
+    content="Santa Clara University course evaluations made easy to search by class and professor. Updated through Winter 2023." />
 
-    <!-- Set Background -->
-    <style>
-        body{
-            background-image: url("{{ url_for('static',filename='img/SCU.jpg') }}");
-        }
-    </style>
+<!-- Base Custom CSS for Background -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<!-- Set Background -->
+<style>
+    body {
+        background-image: url("{{ url_for('static',filename='img/SCU.jpg') }}");
+    }
+</style>
 
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    
-    <!-- Popper JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> 
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
-    
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-    <!-- Load FontAwesome library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 
-    <!-- Easy Autocomplete -->
-    <!-- JS file -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
-    <!-- CSS file -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.min.css">
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
 
-    <!-- Tablesorter -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.widgets.min.js"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-155310332-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+<!-- Load FontAwesome library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-        gtag('config', 'UA-155310332-1');
-    </script>
+<!-- Easy Autocomplete -->
+<!-- JS file -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.js"></script>
 
-{% endblock %}  
+<!-- CSS file -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.min.css">
+
+<!-- Tablesorter -->
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.widgets.min.js"></script>
+
+{% if not config['DEBUG'] %}
+<!-- Analytics -->
+<script async src="https://analytics.zachbellay.com/script.js"
+    data-website-id="4510f9da-973e-4e68-b4c2-2617fbed5fc5"></script>
+{% endif %}
+
+{% endblock %}
 
 {% block navbar %}
 {% endblock %}
@@ -75,16 +74,19 @@
     <div style="height:50px; width:100%; clear:both;"></div>
 
     {% block footer %}
-    
+
     <footer>
 
         <div class="container">
-            
+
             <div class="row">
                 <div class="col">
-                    <a>Created by Zach Bellay</a>
+                    <a>
+                        Created by
+                        <a href="https://zachbellay.com">Zach Bellay</a>
+                    </a>
                 </div>
-                   
+
                 <div class="col">
                     <a href="/about">About</a>
                 </div>
@@ -92,7 +94,7 @@
                 <div class="col">
                     <a href="/privacy">Privacy & Data Policy</a>
                 </div>
-                
+
             </div>
 
         </div>

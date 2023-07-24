@@ -1,10 +1,24 @@
 ### Dev Setup
 - To get database up and running run
-    - `flask db migrate && flask db upgrade`
+    - `flask db stamp head && flask db migrate && flask db upgrade`
 - To populate evaluations into database run: 
     - `python3 csv_to_sqlite.py`
 - To run development server run: 
     - `gunicorn --bind 127.0.0.1:5000 --certfile ./dev-pems/cert.pem  --keyfile ./dev-pems/key.pem  wsgi --access-logfile - --error-logfile`
+
+## Building the docker image
+
+_Note_: The tags are different in the docs, so don't just copy paste. Make sure you are using the proper tags when building and deploying.
+
+- Login to gitlab container registry
+    - `docker login registry.gitlab.com`
+
+- To build the image and push to gitlab on an M1 Mac:
+    - `docker buildx build --platform linux/amd64 --push -t registry.gitlab.com/zachbellay/flask-scu-course-evals:spring-2021-update .`
+
+Tags:
+- spring-2021-update
+- june-2023-update
 
 ### Prod Setup
 - Transfer `app.db` file to server under `~/db`

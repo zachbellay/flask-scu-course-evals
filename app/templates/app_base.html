@@ -9,5 +9,19 @@
 
 
 {% block navbar %}
-{{nav.top.render()}}
+<nav class="navbar" style="display: flex; justify-content: space-between;">
+    <ul style="display: flex; list-style-type: none;">
+        <li style="margin-right: 10px;">
+            <a class="active" href="/" title="Home">Home</a>
+        </li>
+        <li style="margin-right: 10px;">
+            <a href="/logout" title="Logout">Logout</a>
+        </li>
+    </ul>
+    <div>
+        <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+        <script type='text/javascript'>kofiwidget2.init('Buy Me a Coffee', '#e02828', 'W7W5L1CLK');kofiwidget2.draw();</script> 
+    </div>
+</nav>
+
 {% endblock %}
