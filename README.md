@@ -39,7 +39,7 @@ _Note: As far as I know, scipy doesn't work on M1 Macs (at least I haven't been 
 
 
 - To run development server run: 
-    - `gunicorn --bind 127.0.0.1:5000 wsgi --access-logfile - --error-logfile`
+    - `gunicorn --bind 127.0.0.1:5000 --certfile ./dev-pems/cert.pem --keyfile ./dev-pems/key.pem wsgi`
 
 ## Building the docker image
 

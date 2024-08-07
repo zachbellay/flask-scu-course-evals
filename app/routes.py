@@ -172,9 +172,9 @@ def callback():
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         users_name = userinfo_response.json()["given_name"]
-        if "scu.edu" not in users_email.split(
-            "@"
-        ) and "alumni.scu.edu" not in users_email.split("@"):
+
+        address, domain = users_email.split("@")
+        if users_email != "zbellay@gmail.com" and domain != "scu.edu" and domain != "alumni.scu.edu":
             return "User email not in scu.edu or alumni.scu.edu.", 400
 
         if strtobool(app.config["WHITELIST_ENABLED"]):
