@@ -6,7 +6,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     WHITELIST_ENABLED = os.environ.get("WHITELIST_ENABLED", False)
-    SECRET_KEY = os.urandom(16)
+    SECRET_KEY = os.environ.get("SECRET_KEY", os.urandom(16))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db', 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
