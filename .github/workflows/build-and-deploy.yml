@@ -20,7 +20,9 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Import application
         env:
-          APP_CONFIG: config.TestingConfig
+          APP_CONFIG: config.ProductionConfig
+          PROD_GOOGLE_CLIENT_ID: ci-placeholder.apps.googleusercontent.com
+          PROD_GOOGLE_CLIENT_SECRET: ci-placeholder
           WHITELIST_ENABLED: "False"
         run: python -c 'from app import app; print(app.name)'
 
