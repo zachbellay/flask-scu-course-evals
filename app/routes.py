@@ -41,6 +41,12 @@ login_manager.init_app(app)
 client = WebApplicationClient(app.config["GOOGLE_CLIENT_ID"])
 
 
+def oauth_redirect_uri():
+    return request.base_url.replace(
+        f"{request.scheme}://", f"{app.config['OAUTH_REDIRECT_SCHEME']}://", 1
+    )
+
+
 @app.route("/haha")
 def haha():
     raise Exception("500")
@@ -125,7 +131,7 @@ def login():
     # scopes that let you retrieve user's profile from Google
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
-        redirect_uri=request.base_url + "/callback",
+        redirect_uri=oauth_redirect_uri() + "/callback",
         scope=["openid", "email", "profile"],
     )
     return redirect(request_uri)
@@ -145,7 +151,7 @@ def callback():
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
         authorization_response=request.url,
-        redirect_url=request.base_url,
+        redirect_url=oauth_redirect_uri(),
         code=code,
     )
     token_response = requests.post(

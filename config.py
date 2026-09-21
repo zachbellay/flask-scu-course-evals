@@ -14,6 +14,7 @@ class Config(object):
     GOOGLE_DISCOVERY_URL = (
         "https://accounts.google.com/.well-known/openid-configuration"
     )
+    OAUTH_REDIRECT_SCHEME = os.environ.get("OAUTH_REDIRECT_SCHEME", "https")
 
 class ProductionConfig(Config):   
     GOOGLE_CLIENT_ID = os.environ.get("PROD_GOOGLE_CLIENT_ID", None)
